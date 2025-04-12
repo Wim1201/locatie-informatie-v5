@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locatie Informatie: {{ address }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header class="location-header">
+        <div class="container">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo">
+                <h1>{{ address }}</h1>
+            </div>
+            <p>Gedetailleerde informatie over deze locatie</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('home') }}">
+            <button class="back-button">← Terug naar zoeken</button>
+        </a>
+
+        <div id="map" class="result-map"></div>
+
+        {% if result.ai_combined_summary %}
+        <div class="ai-summary">
+            <h2>{{ result.ai_combined_summary.title }}</h2>
+            <p>{{ result.ai_combined_summary.data.tekst }}</p>
+        </div>
+        {% endif %}
+
+        <div class="result-sections">
+            {% if result.pdok_data %}
+            <div class="result-card">
+                <h2>Adresgegevens</h2>
+                <div class="data-item">
+                    <span class="data-label">Provincie:</span>
+                    <span class="data-value">{{ result.pdok_data.get('provincienaam', 'Onbekend') }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Gemeente:</span>
+                    <span class="data-value">{{ result.pdok_data.get('gemeentenaam', 'Onbekend') }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Plaats:</span>
+                    <span class="data-value">{{ result.pdok_data.get('woonplaatsnaam', 'Onbekend') }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Straat:</span>
+                    <span class="data-value">{{ result.pdok_data.get('straatnaam', 'Onbekend') }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">Postcode:</span>
+                    <span class="data-value">{{ result.pdok_data.get('postcode', 'Onbekend') }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if result.bag_data %}
+            <div class="result-card">
+                <h2>{{ result.bag_data.title }}</h2>
+                {% for key, value in result.bag_data.data.items() %}
+                <div class="data-item">
+                    <span class="data-label">{{ key|title|replace('_', ' ') }}:</span>
+                    <span class="data-value">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if result.ruimtelijke_plannen_data %}
+            <div class="result-card">
+                <h2>{{ result.ruimtelijke_plannen_data.title }}</h2>
+                {% for key, value in result.ruimtelijke_plannen_data.data.items() %}
+                <div class="data-item">
+                    <span class="data-label">{{ key|title|replace('_', ' ') }}:</span>
+                    <span class="data-value">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if result.demografische_data %}
+            <div class="result-card">
+                <h2>{{ result.demografische_data.title }}</h2>
+                {% for key, value in result.demografische_data.data.items() %}
+                <div class="data-item">
+                    <span class="data-label">{{ key|title|replace('_', ' ') }}:</span>
+                    <span class="data-value">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if result.anthropic_analysis %}
+            <div class="result-card">
+                <h2>{{ result.anthropic_analysis.title }}</h2>
+                <div class="data-item ai-content">
+                    <span class="data-value full-width">{{ result.anthropic_analysis.data.tekst }}</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if result.openai_analysis %}
+            <div class="result-card">
+                <h2>{{ result.openai_analysis.title }}</h2>
+                <div class="data-item ai-content">
+                    <span class="data-value full-width">{{ result.openai_analysis.data.tekst }}</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if result.property_query_response %}
+            <div class="result-card ai-query-response">
+                <h2>Antwoord op uw vraag</h2>
+                <div class="data-item">
+                    <span class="data-label">Uw vraag:</span>
+                    <span class="data-value">{{ property_query }}</span>
+                </div>
+                <div class="data-item ai-content">
+                    <span class="data-value full-width">{{ result.property_query_response.data.tekst }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Nederlandse Locatie Informatie Portaal</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialiseer de kaart met de locatie
+        const lat = {{ lat }};
+        const lon = {{ lon }};
+        
+        const map = L.map('map').setView([lat, lon], 15);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Voeg een marker toe voor de exacte locatie
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup('{{ address }}')
+            .openPopup();
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locatie Informatie Portaal</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo">
+                <h1>Nederlandse Locatie Informatie</h1>
+            </div>
+            <p>Ontdek alles over een locatie in Nederland</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-section">
+            <h2>Zoek locatie-informatie</h2>
+            <form action="/search" method="POST">
+                <div class="form-group">
+                    <label for="address">Vul een Nederlands adres in:</label>
+                    <input type="text" id="address" name="address" placeholder="Bijvoorbeeld: Herengracht 99, Amsterdam" required>
+                </div>
+                <div class="form-group">
+                    <label for="property_query">Specifieke zoekvraag over deze locatie (optioneel):</label>
+                    <input type="text" id="property_query" name="property_query" placeholder="Bijv: Wat is de bouwtechnische staat? Of: Is dit een goede investering?">
+                </div>
+                <button type="submit">Zoeken</button>
+            </form>
+            <div id="map"></div>
+        </div>
+
+        <div class="features-section">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Demografische Gegevens</h3>
+                <p>Ontdek demografische informatie zoals inwonersaantal, gemiddelde leeftijd en inkomen in de omgeving.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏠</div>
+                <h3>BAG Gegevens</h3>
+                <p>Bekijk de Basisregistratie Adressen en Gebouwen informatie zoals bouwjaar en oppervlakte.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3>Ruimtelijke Plannen</h3>
+                <p>Krijg inzicht in bestemmingsplannen en ruimtelijke ontwikkelingen in de omgeving.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>AI Analyse</h3>
+                <p>Ontvang een gedetailleerde analyse van de locatie en krijg antwoord op specifieke vragen over het pand.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Nederlandse Locatie Informatie Portaal</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialiseer de OpenStreetMap kaart van Nederland
+        var map = L.map('map').setView([52.2129919, 5.2793703], 7);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Event listener voor het formulier
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const address = document.getElementById('address').value;
+            if (!address.trim()) {
+                event.preventDefault();
+                alert('Vul een geldig adres in');
+            }
+        });
+    </script>
+</body>
+</html>
