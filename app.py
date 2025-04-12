@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from config import OPENAI_API_KEY, ANTHROPIC_API_KEY, BAG_API_KEY, RUIMTELIJKE_PLANNEN_API_KEY
 import requests
 import json
 import os
